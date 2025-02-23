@@ -1,4 +1,3 @@
-/* Estilos generales */
 body {
     font-family: Arial, sans-serif;
     display: flex;
@@ -6,56 +5,89 @@ body {
     align-items: center;
     height: 100vh;
     margin: 0;
+    background-color: #f0f0f0;
 }
 
-.container {
+.game-container {
     display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+    max-width: 1200px;
+    padding: 10px;
     gap: 20px;
 }
 
-/* Estilos para la caja de elementos */
-.element-box {
-    width: 200px;
+.menu {
+    width: 220px;
+    height: 500px;
+    overflow-y: auto;
+    background-color: #ffffff;
+    border: 2px solid #ccc;
     padding: 10px;
-    border: 2px solid #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.element-box p {
-    text-align: center;
-    font-weight: bold;
+.menu-scroll {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
 }
 
-/* Estilos para los elementos arrastrables */
-.draggable {
-    margin: 10px 0;
-    padding: 10px;
-    background-color: #f0f0f0;
-    border: 1px solid #ccc;
+.menu-item {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.menu-image {
+    width: 100%;
+    height: auto;
     cursor: grab;
-    touch-action: none; /* Desactiva el comportamiento táctil predeterminado */
-    user-select: none; /* Evita la selección de texto durante el arrastre */
+    border-radius: 10px;
 }
 
-/* Estilos para la zona de destino */
-.dropzone {
-    flex-grow: 1;
-    padding: 10px;
-    border: 2px dashed #000;
+.build-zone {
     position: relative;
+    width: 600px;
+    height: 500px;
+    background-color: #ffccdc;
+    border: 2px dashed #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
 }
 
-.dropzone p {
-    text-align: center;
-    font-weight: bold;
+.canvas {
+    position: relative;
+    width: 100%;
+    height: 100%;
 }
 
-/* Estilos cuando un elemento es arrastrado sobre la zona de destino */
-.dropzone.active {
-    background-color: #e0ffe0;
-}
-
-/* Estilos cuando un elemento es soltado en la zona de destino */
-.dropzone .draggable {
+.alien-part {
     position: absolute;
+    cursor: grab;
+    width: 80px;
+    height: 80px;
     touch-action: none;
+}
+
+.trash-zone {
+    width: 150px;
+    height: 150px;
+    background-color: #ffdddd;
+    border: 2px dashed #ff4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: #ff4444;
+    cursor: pointer;
 }
