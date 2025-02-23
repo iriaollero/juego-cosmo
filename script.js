@@ -28,8 +28,10 @@ document.addEventListener("DOMContentLoaded", function () {
         clone.style.position = "absolute";
         clone.style.left = touch.pageX + "px";
         clone.style.top = touch.pageY + "px";
+        clone.style.transform = "scale(1)";
         document.body.appendChild(clone);
         clone.dataset.dragging = "true";
+        makeResizable(clone);
     }
 
     function handleDragOver(event) {
@@ -48,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
         newElement.style.top = event.offsetY + "px";
         canvas.appendChild(newElement);
         addDragFunctionality(newElement);
+        makeResizable(newElement);
     }
 
     function handleTouchMove(event) {
@@ -79,5 +82,15 @@ document.addEventListener("DOMContentLoaded", function () {
     function addDragFunctionality(element) {
         element.setAttribute("draggable", true);
         element.addEventListener("dragstart", handleDragStart);
+    }
+
+    function makeResizable(element) {
+        element.addEventListener("wheel", function(event) {
+            event.preventDefault();
+            let scale = parseFloat(element.style.transform.replace("scale(", "").replace(")", "")) || 1;
+            scale += event.deltaY * -0.01;
+            scale = Math.min(Math.max(0.5, scale), 2);
+            element.style.transform = `scale(${scale})`;
+        });
     }
 });
