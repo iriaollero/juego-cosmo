@@ -73,8 +73,9 @@ body {
 .alien-part {
     position: absolute;
     cursor: move;
-    max-width: 100px;
-    max-height: 100px;
+    width: 80px;
+    height: 80px;
+    touch-action: none;
 }
 
 .trash-zone {
@@ -88,4 +89,5 @@ body {
     font-size: 18px;
     font-weight: bold;
     color: #ff4444;
+    cursor: pointer;
 }
