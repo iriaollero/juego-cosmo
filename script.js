@@ -1,88 +1,80 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const menuItems = document.querySelectorAll(".menu-image");
-    const canvas = document.getElementById("canvas");
-    const trashZone = document.getElementById("trash-zone");
-    const trashBin = document.getElementById("trash-bin");
+// Función para manejar el movimiento de arrastre
+function dragMoveListener(event) {
+    const target = event.target;
+    // Recupera las posiciones almacenadas o establece en 0 si no existen
+    let x = (parseFloat(target.getAttribute('data-x')) || 0) + event.dx;
+    let y = (parseFloat(target.getAttribute('data-y')) || 0) + event.dy;
 
-    menuItems.forEach(item => {
-        item.addEventListener("touchstart", handleTouchStart, { passive: false });
-    });
+    // Aplica la transformación de traducción
+    target.style.transform = `translate(${x}px, ${y}px)`;
 
-    function handleTouchStart(event) {
-        event.preventDefault();
-        let touch = event.touches[0];
-        let clone = event.target.cloneNode(true);
-        clone.classList.add("alien-part");
-        clone.style.position = "absolute";
-        clone.style.left = touch.pageX + "px";
-        clone.style.top = touch.pageY + "px";
-        clone.style.width = "80px";
-        clone.style.height = "80px";
-        document.body.appendChild(clone);
+    // Actualiza los atributos de posición
+    target.setAttribute('data-x', x);
+    target.setAttribute('data-y', y);
+}
 
-        function moveElement(e) {
-            if (e.touches.length === 1) {
-                let moveTouch = e.touches[0];
-                clone.style.left = moveTouch.pageX + "px";
-                clone.style.top = moveTouch.pageY + "px";
-            }
-        }
-
-        function endMove(e) {
-            let dropTarget = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-            if (dropTarget && (dropTarget.id === "canvas" || dropTarget.closest("#canvas"))) {
-                canvas.appendChild(clone);
-                makeResizable(clone);
-            } else {
-                clone.remove();
-            }
-            clone.removeEventListener("touchmove", moveElement);
-            clone.removeEventListener("touchend", endMove);
-        }
-
-        clone.addEventListener("touchmove", moveElement);
-        clone.addEventListener("touchend", endMove);
+// Inicializa la interacción de arrastre para elementos con la clase 'draggable'
+interact('.draggable').draggable({
+    inertia: true, // Habilita inercia para un arrastre más fluido
+    autoScroll: true, // Habilita el auto desplazamiento durante el arrastre
+    listeners: {
+        move: dragMoveListener, // Llama a la función durante el movimiento de arrastre
     }
+});
 
-    trashZone.addEventListener("dragover", (event) => event.preventDefault());
-    trashZone.addEventListener("drop", handleTrashDrop);
-    trashBin.addEventListener("click", removeAllElements);
+// Define la zona de destino para soltar los elementos
+interact('.dropzone').dropzone({
+    accept: '.draggable', // Acepta elementos con la clase 'draggable'
+    overlap: 0.75, // Requiere un 75% de superposición para considerar un drop
+    ondropactivate: function (event) {
+        event.target.classList.add('active'); // Añade clase activa al iniciar el drop
+    },
+    ondragenter: function (event) {
+        const draggableElement = event.relatedTarget;
+        const dropzoneElement = event.target;
 
-    function handleTrashDrop(event) {
-        event.preventDefault();
-        let element = document.elementFromPoint(event.clientX, event.clientY);
-        if (element && element.classList.contains("alien-part")) {
-            element.remove();
-        }
-    }
+        // Añade estilos de retroalimentación visual
+        dropzoneElement.classList.add('active');
+        draggableElement.classList.add('can-drop');
+    },
+    ondragleave: function (event) {
+        // Remueve estilos cuando el elemento sale de la zona de drop
+        event.target.classList.remove('active');
+        event.relatedTarget.classList.remove('can-drop');
+    },
+    ondrop: function (event) {
+        const draggableElement = event.relatedTarget;
+        const dropzoneElement = event.target;
 
-    function removeAllElements() {
-        canvas.innerHTML = "";
-    }
+        // Añade el elemento arrastrado a la zona de destino
+        dropzoneElement.appendChild(draggableElement);
 
-    function makeResizable(element) {
-        let initialDistance = null;
+        // Resetea las transformaciones y posiciones
+        draggableElement.style.transform = 'none';
+        draggableElement.setAttribute('data-x', 0);
+        draggableElement.setAttribute('data-y', 0);
 
-        element.addEventListener("touchstart", function(event) {
-            if (event.touches.length === 2) {
-                initialDistance = getDistance(event.touches);
-            }
-        });
+        // Posiciona el elemento en las coordenadas donde se soltó
+        draggableElement.style.left = `${event.offsetX - draggableElement.offsetWidth / 2}px`;
+        draggableElement.style.top = `${event.offsetY - draggableElement.offsetHeight / 2}px`;
 
-        element.addEventListener("touchmove", function(event) {
-            if (event.touches.length === 2 && initialDistance) {
-                let newDistance = getDistance(event.touches);
-                let scale = newDistance / initialDistance;
-                let size = Math.max(40, Math.min(150, element.clientWidth * scale));
-                element.style.width = `${size}px`;
-                element.style.height = `${size}px`;
+        // Habilita el redimensionamiento del elemento dentro de la zona de destino
+        interact(draggableElement).gesturable({
+            listeners: {
+                move: function (event) {
+                    let scale = (parseFloat(draggableElement.getAttribute('data-scale')) || 1) * (1 + event.ds);
+
+                    // Limita el escalado para evitar tamaños demasiado pequeños o grandes
+                    scale = Math.max(0.5, Math.min(scale, 2));
+
+                    draggableElement.style.transform = `scale(${scale})`;
+                    draggableElement.setAttribute('data-scale', scale);
+                }
             }
         });
-    }
-
-    function getDistance(touches) {
-        let dx = touches[0].pageX - touches[1].pageX;
-        let dy = touches[0].pageY - touches[1].pageY;
-        return Math.sqrt(dx * dx + dy * dy);
+    },
+    ondropdeactivate: function (event) {
+        // Remueve la clase activa al finalizar el drop
+        event.target.classList.remove('active');
     }
 });
