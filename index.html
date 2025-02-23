@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crea tu Alienígena</title>
+    <title>Juego Cosmo</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Inclusión de la biblioteca interact.js -->
+    <script src="https://cdn.jsdelivr.net/npm/@interactjs/interactjs/dist/interact.min.js"></script>
 </head>
 <body>
-    <div class="game-container">
+    <div class="container">
         <div class="menu">
             <h2>Elementos</h2>
             <div class="menu-scroll">
@@ -20,15 +21,8 @@
                 <div class="menu-item"><img src="images/BOCA3.png" alt="Boca" class="menu-image"></div>
             </div>
         </div>
-        <div class="build-zone" id="build-zone">
-            <h2>Arrastra aquí</h2>
-            <div class="canvas" id="canvas"></div>
-        </div>
-        <div class="trash-zone" id="trash-zone">
-            <h2>Eliminar</h2>
-            <div class="trash-bin" id="trash-bin">
-                <i class="fas fa-trash"></i> Eliminar todo
-            </div>
+        <div class="dropzone">
+            <p>Arrastra aquí</p>
         </div>
     </div>
     <script src="script.js"></script>
