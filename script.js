@@ -5,8 +5,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const trashBin = document.getElementById("trash-bin");
 
     menuItems.forEach(item => {
-        item.setAttribute("draggable", true);
-        item.addEventListener("dragstart", handleDragStart);
         item.addEventListener("touchstart", handleTouchStart, { passive: false });
     });
 
@@ -15,10 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
     trashZone.addEventListener("dragover", handleDragOver);
     trashZone.addEventListener("drop", handleTrashDrop);
     trashBin.addEventListener("click", removeAllElements);
-
-    function handleDragStart(event) {
-        event.dataTransfer.setData("text", event.target.src);
-    }
 
     function handleTouchStart(event) {
         event.preventDefault();
@@ -31,6 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
         clone.style.width = "80px";
         clone.style.height = "80px";
         document.body.appendChild(clone);
+        clone.dataset.dragging = "true";
 
         function moveElement(e) {
             if (e.touches.length === 1) {
@@ -40,15 +35,19 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
-        function endMove() {
+        function endMove(e) {
+            let dropTarget = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+            if (dropTarget && dropTarget.id === "canvas") {
+                canvas.appendChild(clone);
+            } else {
+                clone.remove();
+            }
             clone.removeEventListener("touchmove", moveElement);
             clone.removeEventListener("touchend", endMove);
-            canvas.appendChild(clone);
         }
 
         clone.addEventListener("touchmove", moveElement);
         clone.addEventListener("touchend", endMove);
-
         makeResizable(clone);
     }
 
@@ -58,17 +57,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleDrop(event) {
         event.preventDefault();
-        const imageUrl = event.dataTransfer.getData("text");
-        let newElement = document.createElement("img");
-        newElement.src = imageUrl;
-        newElement.classList.add("alien-part");
-        newElement.style.position = "absolute";
-        newElement.style.left = event.offsetX + "px";
-        newElement.style.top = event.offsetY + "px";
-        newElement.style.width = "80px";
-        newElement.style.height = "80px";
-        canvas.appendChild(newElement);
-        makeResizable(newElement);
     }
 
     function handleTrashDrop(event) {
