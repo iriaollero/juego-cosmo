@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     const menuItems = document.querySelectorAll(".menu-image");
     const canvas = document.getElementById("canvas");
-    const trashZone = document.getElementById("trash-zone");
     const trashBin = document.getElementById("trash-bin");
 
     menuItems.forEach(item => {
@@ -44,17 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
         clone.addEventListener("touchend", endMove);
     }
 
-    trashZone.addEventListener("dragover", (event) => event.preventDefault());
-    trashZone.addEventListener("drop", handleTrashDrop);
     trashBin.addEventListener("click", removeAllElements);
-
-    function handleTrashDrop(event) {
-        event.preventDefault();
-        let element = document.elementFromPoint(event.clientX, event.clientY);
-        if (element && element.classList.contains("alien-part")) {
-            element.remove();
-        }
-    }
 
     function removeAllElements() {
         canvas.innerHTML = "";
