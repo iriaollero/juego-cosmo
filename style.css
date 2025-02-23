@@ -94,9 +94,16 @@ body {
     justify-content: center;
     text-align: center;
     border-radius: 10px;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: bold;
     color: #ff4444;
     cursor: pointer;
-    padding: 10px;
+    padding: 20px;
+}
+
+.trash-bin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
