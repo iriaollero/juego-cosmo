@@ -79,7 +79,6 @@ document.addEventListener("DOMContentLoaded", () => {
     trashZone.addEventListener("touchmove", (e) => {
         e.preventDefault();
         let touch = e.touches[0];
-        let trashRect = trashZone.getBoundingClientRect();
         let elements = document.elementsFromPoint(touch.clientX, touch.clientY);
         elements.forEach(el => {
             if (el.classList.contains("alien-part")) {
