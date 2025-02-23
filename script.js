@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const menuItems = document.querySelectorAll(".menu-image");
     const canvas = document.getElementById("canvas");
     const trashZone = document.getElementById("trash-zone");
-    const trashBin = document.querySelector(".trash-bin");
+    const trashBin = document.getElementById("trash-bin");
 
     menuItems.forEach(item => {
         item.setAttribute("draggable", true);
@@ -56,24 +56,6 @@ document.addEventListener("DOMContentLoaded", function () {
         canvas.appendChild(newElement);
         makeResizable(newElement);
         addDragFunctionality(newElement);
-    }
-
-    function handleTouchMove(event) {
-        event.preventDefault();
-        let touch = event.touches[0];
-        let element = document.querySelector("[data-dragging='true']");
-        if (element) {
-            element.style.left = touch.pageX + "px";
-            element.style.top = touch.pageY + "px";
-        }
-    }
-
-    function handleTouchEnd(event) {
-        let element = document.querySelector("[data-dragging='true']");
-        if (element) {
-            element.removeAttribute("data-dragging");
-            canvas.appendChild(element);
-        }
     }
 
     function handleTrashDrop(event) {
