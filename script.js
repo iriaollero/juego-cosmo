@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let dropTarget = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
             if (dropTarget && dropTarget.id === "canvas") {
                 canvas.appendChild(clone);
+                makeResizable(clone);
             } else {
                 clone.remove();
             }
@@ -48,7 +49,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         clone.addEventListener("touchmove", moveElement);
         clone.addEventListener("touchend", endMove);
-        makeResizable(clone);
     }
 
     function handleDragOver(event) {
