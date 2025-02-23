@@ -12,9 +12,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     canvas.addEventListener("dragover", handleDragOver);
     canvas.addEventListener("drop", handleDrop);
-    canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
-    canvas.addEventListener("touchend", handleTouchEnd);
-
     trashZone.addEventListener("dragover", handleDragOver);
     trashZone.addEventListener("drop", handleTrashDrop);
     trashBin.addEventListener("click", removeAllElements);
@@ -34,21 +31,25 @@ document.addEventListener("DOMContentLoaded", function () {
         clone.style.width = "80px";
         clone.style.height = "80px";
         document.body.appendChild(clone);
-        clone.dataset.dragging = "true";
-        makeResizable(clone);
 
-        clone.addEventListener("touchmove", function(event) {
-            if (event.touches.length === 1) {
-                let moveTouch = event.touches[0];
+        function moveElement(e) {
+            if (e.touches.length === 1) {
+                let moveTouch = e.touches[0];
                 clone.style.left = moveTouch.pageX + "px";
                 clone.style.top = moveTouch.pageY + "px";
             }
-        });
+        }
 
-        clone.addEventListener("touchend", function() {
-            clone.removeAttribute("data-dragging");
+        function endMove() {
+            clone.removeEventListener("touchmove", moveElement);
+            clone.removeEventListener("touchend", endMove);
             canvas.appendChild(clone);
-        });
+        }
+
+        clone.addEventListener("touchmove", moveElement);
+        clone.addEventListener("touchend", endMove);
+
+        makeResizable(clone);
     }
 
     function handleDragOver(event) {
@@ -72,8 +73,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleTrashDrop(event) {
         event.preventDefault();
-        let element = document.querySelector(".alien-part:last-child");
-        if (element) {
+        let element = document.elementFromPoint(event.clientX, event.clientY);
+        if (element && element.classList.contains("alien-part")) {
             element.remove();
         }
     }
@@ -84,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function makeResizable(element) {
         let initialDistance = null;
-        
+
         element.addEventListener("touchstart", function(event) {
             if (event.touches.length === 2) {
                 initialDistance = getDistance(event.touches);
