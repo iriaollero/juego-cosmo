@@ -36,6 +36,19 @@ document.addEventListener("DOMContentLoaded", function () {
         document.body.appendChild(clone);
         clone.dataset.dragging = "true";
         makeResizable(clone);
+
+        clone.addEventListener("touchmove", function(event) {
+            if (event.touches.length === 1) {
+                let moveTouch = event.touches[0];
+                clone.style.left = moveTouch.pageX + "px";
+                clone.style.top = moveTouch.pageY + "px";
+            }
+        });
+
+        clone.addEventListener("touchend", function() {
+            clone.removeAttribute("data-dragging");
+            canvas.appendChild(clone);
+        });
     }
 
     function handleDragOver(event) {
@@ -55,7 +68,6 @@ document.addEventListener("DOMContentLoaded", function () {
         newElement.style.height = "80px";
         canvas.appendChild(newElement);
         makeResizable(newElement);
-        addDragFunctionality(newElement);
     }
 
     function handleTrashDrop(event) {
