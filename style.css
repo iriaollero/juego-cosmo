@@ -74,6 +74,7 @@ body {
 .alien-part {
     position: absolute;
     touch-action: none;
+    z-index: 1;
 }
 
 .trash-container {
