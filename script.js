@@ -13,15 +13,15 @@ document.addEventListener("DOMContentLoaded", function () {
         let clone = event.target.cloneNode(true);
         clone.classList.add("alien-part");
         clone.style.position = "absolute";
-        clone.style.left = touch.pageX + "px";
-        clone.style.top = touch.pageY + "px";
+        clone.style.width = "80px";
+        clone.style.height = "80px";
         document.body.appendChild(clone);
 
         function moveElement(e) {
             if (e.touches.length === 1) {
                 let moveTouch = e.touches[0];
-                clone.style.left = moveTouch.pageX + "px";
-                clone.style.top = moveTouch.pageY + "px";
+                clone.style.left = moveTouch.pageX - 40 + "px";
+                clone.style.top = moveTouch.pageY - 40 + "px";
             }
         }
 
@@ -34,12 +34,43 @@ document.addEventListener("DOMContentLoaded", function () {
             } else {
                 clone.remove();
             }
-            clone.removeEventListener("touchmove", moveElement);
-            clone.removeEventListener("touchend", endMove);
+            document.removeEventListener("touchmove", moveElement);
+            document.removeEventListener("touchend", endMove);
         }
 
-        clone.addEventListener("touchmove", moveElement);
-        clone.addEventListener("touchend", endMove);
+        document.addEventListener("touchmove", moveElement, { passive: false });
+        document.addEventListener("touchend", endMove);
     }
 
-    trashBin.addEventListener("click
+    trashBin.addEventListener("click", removeAllElements);
+
+    function removeAllElements() {
+        canvas.innerHTML = "";
+    }
+
+    function makeResizable(element) {
+        let initialDistance = null;
+
+        element.addEventListener("touchstart", function(event) {
+            if (event.touches.length === 2) {
+                initialDistance = getDistance(event.touches);
+            }
+        });
+
+        element.addEventListener("touchmove", function(event) {
+            if (event.touches.length === 2 && initialDistance) {
+                let newDistance = getDistance(event.touches);
+                let scale = newDistance / initialDistance;
+                let size = Math.max(40, Math.min(150, element.clientWidth * scale));
+                element.style.width = `${size}px`;
+                element.style.height = `${size}px`;
+            }
+        });
+    }
+
+    function getDistance(touches) {
+        let dx = touches[0].pageX - touches[1].pageX;
+        let dy = touches[0].pageY - touches[1].pageY;
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+});
