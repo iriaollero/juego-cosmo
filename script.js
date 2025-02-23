@@ -24,6 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
         newElement.innerHTML = `<img src="${element.src}" style="width: 100%; height: 100%;">`;
         canvas.appendChild(newElement);
         makeElementDraggable(newElement);
+        makeElementResizable(newElement);
     }
 
     function makeElementDraggable(element) {
@@ -46,6 +47,34 @@ document.addEventListener("DOMContentLoaded", () => {
             let moveY = touch.clientY - startY;
             element.style.left = initialX + moveX + "px";
             element.style.top = initialY + moveY + "px";
+        });
+    }
+
+    function makeElementResizable(element) {
+        let initialDistance = null;
+        let scale = 1;
+
+        element.addEventListener("touchmove", (e) => {
+            if (e.touches.length === 2) {
+                e.preventDefault();
+                const touch1 = e.touches[0];
+                const touch2 = e.touches[1];
+                const distance = Math.hypot(
+                    touch2.clientX - touch1.clientX,
+                    touch2.clientY - touch1.clientY
+                );
+                
+                if (initialDistance === null) {
+                    initialDistance = distance;
+                } else {
+                    scale = distance / initialDistance;
+                    element.style.transform = `scale(${scale})`;
+                }
+            }
+        });
+
+        element.addEventListener("touchend", () => {
+            initialDistance = null;
         });
     }
 
