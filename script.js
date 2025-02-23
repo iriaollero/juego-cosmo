@@ -57,6 +57,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleDrop(event) {
         event.preventDefault();
+        let element = document.querySelector("[data-dragging='true']");
+        if (element) {
+            element.removeAttribute("data-dragging");
+            canvas.appendChild(element);
+        }
     }
 
     function handleTrashDrop(event) {
