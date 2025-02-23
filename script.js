@@ -3,6 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const canvas = document.getElementById("canvas");
     const trashZone = document.getElementById("trash-zone");
     const clearAllBtn = document.getElementById("clear-all");
+    let zIndexCounter = 1;
 
     menuItems.forEach(item => {
         item.addEventListener("touchstart", (e) => {
@@ -20,6 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
         newElement.style.width = "80px";
         newElement.style.height = "80px";
         newElement.style.transformOrigin = "center center";
+        newElement.style.zIndex = zIndexCounter++;
         newElement.innerHTML = `<img src="${element.src}" style="width: 100%; height: 100%;">`;
         canvas.appendChild(newElement);
         makeElementDraggable(newElement);
@@ -36,6 +38,7 @@ document.addEventListener("DOMContentLoaded", () => {
             startY = touch.clientY;
             initialX = element.offsetLeft;
             initialY = element.offsetTop;
+            element.style.zIndex = zIndexCounter++;
         });
 
         element.addEventListener("touchmove", (e) => {
@@ -48,37 +51,19 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function makeElementResizable(element) {
-        let initialDistance = null;
-        let scale = 1;
-
-        element.addEventListener("touchmove", (e) => {
-            if (e.touches.length === 2) {
-                e.preventDefault();
-                const touch1 = e.touches[0];
-                const touch2 = e.touches[1];
-                const distance = Math.hypot(
-                    touch2.clientX - touch1.clientX,
-                    touch2.clientY - touch1.clientY
-                );
-                
-                if (initialDistance === null) {
-                    initialDistance = distance;
-                } else {
-                    scale = distance / initialDistance;
-                    element.style.transform = `scale(${scale})`;
-                }
-            }
-        });
-
-        element.addEventListener("touchend", () => {
-            initialDistance = null;
-        });
-    }
-
     trashZone.addEventListener("touchmove", (e) => {
         e.preventDefault();
         let touch = e.touches[0];
+        let elements = document.elementsFromPoint(touch.clientX, touch.clientY);
+        elements.forEach(el => {
+            if (el.classList.contains("alien-part")) {
+                el.remove();
+            }
+        });
+    });
+
+    trashZone.addEventListener("touchend", (e) => {
+        let touch = e.changedTouches[0];
         let elements = document.elementsFromPoint(touch.clientX, touch.clientY);
         elements.forEach(el => {
             if (el.classList.contains("alien-part")) {
