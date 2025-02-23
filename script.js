@@ -1,7 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
     const menuItems = document.querySelectorAll(".menu-item");
     const canvas = document.getElementById("canvas");
-    const trashZone = document.getElementById("trash-zone");
     const clearAllBtn = document.getElementById("clear-all");
     let zIndexCounter = 1;
 
@@ -49,17 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
             element.style.top = initialY + moveY + "px";
         });
     }
-
-    trashZone.addEventListener("touchmove", (e) => {
-        e.preventDefault();
-        let touch = e.touches[0];
-        let elements = document.elementsFromPoint(touch.clientX, touch.clientY);
-        elements.forEach(el => {
-            if (el.classList.contains("alien-part")) {
-                el.remove();
-            }
-        });
-    });
 
     clearAllBtn.addEventListener("touchstart", () => {
         canvas.innerHTML = "";
