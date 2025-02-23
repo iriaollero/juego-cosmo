@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const trashZone = document.getElementById("trash-zone");
 
     menuItems.forEach(item => {
+        item.setAttribute("draggable", true);
         item.addEventListener("dragstart", handleDragStart);
         item.addEventListener("touchstart", handleTouchStart, { passive: false });
     });
@@ -17,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
     trashZone.addEventListener("drop", handleTrashDrop);
 
     function handleDragStart(event) {
-        event.dataTransfer.setData("text/plain", event.target.outerHTML);
+        event.dataTransfer.setData("text/plain", event.target.src);
     }
 
     function handleTouchStart(event) {
@@ -28,7 +29,8 @@ document.addEventListener("DOMContentLoaded", function () {
         clone.style.position = "absolute";
         clone.style.left = touch.pageX + "px";
         clone.style.top = touch.pageY + "px";
-        clone.style.transform = "scale(1)";
+        clone.style.width = "80px";
+        clone.style.height = "80px";
         document.body.appendChild(clone);
         clone.dataset.dragging = "true";
         makeResizable(clone);
@@ -40,16 +42,16 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleDrop(event) {
         event.preventDefault();
-        const data = event.dataTransfer.getData("text/plain");
-        const element = document.createElement("div");
-        element.innerHTML = data;
-        let newElement = element.firstChild;
+        const imageUrl = event.dataTransfer.getData("text/plain");
+        let newElement = document.createElement("img");
+        newElement.src = imageUrl;
         newElement.classList.add("alien-part");
         newElement.style.position = "absolute";
         newElement.style.left = event.offsetX + "px";
         newElement.style.top = event.offsetY + "px";
+        newElement.style.width = "80px";
+        newElement.style.height = "80px";
         canvas.appendChild(newElement);
-        addDragFunctionality(newElement);
         makeResizable(newElement);
     }
 
@@ -79,18 +81,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    function addDragFunctionality(element) {
-        element.setAttribute("draggable", true);
-        element.addEventListener("dragstart", handleDragStart);
-    }
-
     function makeResizable(element) {
         element.addEventListener("wheel", function(event) {
             event.preventDefault();
-            let scale = parseFloat(element.style.transform.replace("scale(", "").replace(")", "")) || 1;
-            scale += event.deltaY * -0.01;
-            scale = Math.min(Math.max(0.5, scale), 2);
-            element.style.transform = `scale(${scale})`;
+            let scale = parseFloat(element.style.width.replace("px", "")) || 80;
+            scale += event.deltaY * -1;
+            scale = Math.min(Math.max(40, scale), 150);
+            element.style.width = `${scale}px`;
+            element.style.height = `${scale}px`;
         });
     }
 });
