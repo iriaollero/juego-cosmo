@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const menuItems = document.querySelectorAll(".menu-image");
     const canvas = document.getElementById("canvas");
     const trashZone = document.getElementById("trash-zone");
+    const trashBin = document.querySelector(".trash-bin");
 
     menuItems.forEach(item => {
         item.setAttribute("draggable", true);
@@ -16,9 +17,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     trashZone.addEventListener("dragover", handleDragOver);
     trashZone.addEventListener("drop", handleTrashDrop);
+    trashBin.addEventListener("click", removeAllElements);
 
     function handleDragStart(event) {
-        event.dataTransfer.setData("text/plain", event.target.src);
+        event.dataTransfer.setData("text", event.target.src);
     }
 
     function handleTouchStart(event) {
@@ -42,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleDrop(event) {
         event.preventDefault();
-        const imageUrl = event.dataTransfer.getData("text/plain");
+        const imageUrl = event.dataTransfer.getData("text");
         let newElement = document.createElement("img");
         newElement.src = imageUrl;
         newElement.classList.add("alien-part");
@@ -53,6 +55,7 @@ document.addEventListener("DOMContentLoaded", function () {
         newElement.style.height = "80px";
         canvas.appendChild(newElement);
         makeResizable(newElement);
+        addDragFunctionality(newElement);
     }
 
     function handleTouchMove(event) {
@@ -75,20 +78,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function handleTrashDrop(event) {
         event.preventDefault();
-        const draggedElement = document.querySelector(".alien-part:last-child");
-        if (draggedElement) {
-            draggedElement.remove();
+        let element = document.querySelector(".alien-part:last-child");
+        if (element) {
+            element.remove();
         }
     }
 
+    function removeAllElements() {
+        canvas.innerHTML = "";
+    }
+
     function makeResizable(element) {
-        element.addEventListener("wheel", function(event) {
-            event.preventDefault();
-            let scale = parseFloat(element.style.width.replace("px", "")) || 80;
-            scale += event.deltaY * -1;
-            scale = Math.min(Math.max(40, scale), 150);
-            element.style.width = `${scale}px`;
-            element.style.height = `${scale}px`;
+        let initialDistance = null;
+        
+        element.addEventListener("touchstart", function(event) {
+            if (event.touches.length === 2) {
+                initialDistance = getDistance(event.touches);
+            }
         });
+
+        element.addEventListener("touchmove", function(event) {
+            if (event.touches.length === 2 && initialDistance) {
+                let newDistance = getDistance(event.touches);
+                let scale = newDistance / initialDistance;
+                let size = Math.max(40, Math.min(150, element.clientWidth * scale));
+                element.style.width = `${size}px`;
+                element.style.height = `${size}px`;
+            }
+        });
+    }
+
+    function getDistance(touches) {
+        let dx = touches[0].pageX - touches[1].pageX;
+        let dy = touches[0].pageY - touches[1].pageY;
+        return Math.sqrt(dx * dx + dy * dy);
     }
 });
