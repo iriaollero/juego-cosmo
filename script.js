@@ -8,12 +8,6 @@ document.addEventListener("DOMContentLoaded", function () {
         item.addEventListener("touchstart", handleTouchStart, { passive: false });
     });
 
-    canvas.addEventListener("dragover", handleDragOver);
-    canvas.addEventListener("drop", handleDrop);
-    trashZone.addEventListener("dragover", handleDragOver);
-    trashZone.addEventListener("drop", handleTrashDrop);
-    trashBin.addEventListener("click", removeAllElements);
-
     function handleTouchStart(event) {
         event.preventDefault();
         let touch = event.touches[0];
@@ -25,7 +19,6 @@ document.addEventListener("DOMContentLoaded", function () {
         clone.style.width = "80px";
         clone.style.height = "80px";
         document.body.appendChild(clone);
-        clone.dataset.dragging = "true";
 
         function moveElement(e) {
             if (e.touches.length === 1) {
@@ -37,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         function endMove(e) {
             let dropTarget = document.elementFromPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-            if (dropTarget && dropTarget.id === "canvas") {
+            if (dropTarget && (dropTarget.id === "canvas" || dropTarget.closest("#canvas"))) {
                 canvas.appendChild(clone);
                 makeResizable(clone);
             } else {
@@ -51,18 +44,9 @@ document.addEventListener("DOMContentLoaded", function () {
         clone.addEventListener("touchend", endMove);
     }
 
-    function handleDragOver(event) {
-        event.preventDefault();
-    }
-
-    function handleDrop(event) {
-        event.preventDefault();
-        let element = document.querySelector("[data-dragging='true']");
-        if (element) {
-            element.removeAttribute("data-dragging");
-            canvas.appendChild(element);
-        }
-    }
+    trashZone.addEventListener("dragover", (event) => event.preventDefault());
+    trashZone.addEventListener("drop", handleTrashDrop);
+    trashBin.addEventListener("click", removeAllElements);
 
     function handleTrashDrop(event) {
         event.preventDefault();
